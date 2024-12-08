@@ -1,4 +1,4 @@
-Status,Vehicle Make,Vehicle Model,Vehicle Model Year,Vehicle Color,Vehicle Fuel Source,Wheelchair Accessible,Company Name,City,State,ZIP Code,Taxi Affiliation,Taxi Medallion License Management ,Record ID,Vehicle Type,latitude,longitude
+Status,Vehicle Make,Vehicle Model,Vehicle Model Year,Vehicle Color,Vehicle Fuel Source,Wheelchair Accessible,Company Name,City,State,ZIP Code,Taxi Affiliation,Taxi Medallion License Management ,Record ID,Vehicle Type,Latitude,Longitude
 RESERVED,CHEVROLET,EXPRESS,2014,BLACK,Bio-Diesel,N,CHICAGO PRIVATE TOURS LLC,CHICAGO,IL,60653,none,none,12009Charter Sightseeing,Charter Sightseeing,41.8781,-87.6298
 INACTIVE,MERCEDES,SPRINTER,2010,SILVER,Bio-Diesel,N,O'HARE-MIDWAY LIMOUSINE SERVICE INC # 2,CHICAGO,IL,60640,none,none,12248Charter Sightseeing,Charter Sightseeing,41.8781,-87.6298
 INACTIVE,VAN HOOL,TD925,2008,RED,Bio-Diesel,N,"TRT TRANSPORTATION, INC.",CHICAGO,IL,60609,none,none,13527Charter Sightseeing,Charter Sightseeing,41.8781,-87.6298
