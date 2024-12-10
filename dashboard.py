@@ -5,6 +5,20 @@ import plotly.express as px
 
 df = pd.read_csv("cleaned_vehicles.csv")# read csv
 
+taxi_management_data = {
+            "Cab Management Group, Inc.": 139,
+            "Chicago Taxicab Management Inc.": 89,
+            "Medallion Leasing and Management, Inc.": 340,
+            "Medallion Management Corp.": 2,
+            "Owner Manager": 3416,
+            "Owner-Operator": 1937,
+            "Star North Management LLC": 180,
+            "Sun Financial Services, Inc.": 129,
+            "Taxi Experts, Inc.": 2,
+            "Top Cab Corp.": 122,
+            "none": 5693
+}
+
 
 illinois_df = df[df['State'] == 'IL']
 city_model_counts = illinois_df.groupby('City').size().reset_index(name='Vehicle Count')
@@ -14,7 +28,7 @@ latitudes = df.set_index('City')['Latitude'].to_dict()
 longitudes = df.set_index('City')['Longitude'].to_dict()  
 
 
-app = Dash(__name__)
+app = Dash(__name__) # run app
 
 
 app.layout = html.Div([
@@ -48,6 +62,7 @@ app.layout = html.Div([
 html.Div([
     # fuel sourc pie chart
     html.Div([
+        
         dcc.Graph(id='fuel-source-pie')
     ], style={
         'padding': '20px', 'border': '1px solid #ddd', 'borderRadius': '10px',
@@ -89,25 +104,7 @@ html.Div([
 ], style={
     'display': 'flex', 'justifyContent': 'space-around', 'marginTop': '20px','marginRight': '15px','marginLeft': '5px'
 }),
-html.Div([
-    html.Div([
-        dcc.Graph(id='vehicle-type-treemap')
-    ], style={
-        'padding': '20px', 'border': '1px solid #ddd', 'borderRadius': '10px',
-        'boxShadow': '0px 4px 6px rgba(0, 0, 0, 0.1)', 'margin': '16px', 'flex': '1', 
-        'textAlign': 'center'
-    }),
-    html.Div([
-    dcc.Graph(id='vehicle-type-treemap')
-    ], style={
-        'padding': '20px', 'border': '1px solid #ddd', 'borderRadius': '10px',
-        'boxShadow': '0px 4px 6px rgba(0, 0, 0, 0.1)', 'margin': '16px', 'flex': '1', 
-        'textAlign': 'center'
-    }),
-   
-], style={
-    'display': 'flex', 'justifyContent': 'space-around', 'marginTop': '20px','marginRight': '15px','marginLeft': '5px'
-}),
+
 
 # Map Visualization vehicle numbers
 html.Div([
@@ -116,7 +113,10 @@ html.Div([
     'padding': '20px', 'border': '1px solid #ddd', 'borderRadius': '10px',
     'boxShadow': '0px 4px 6px rgba(0, 0, 0, 0.1)', 'margin': '16px', 'width': '90%', 'marginLeft': 'auto', 'marginRight': 'auto'
 })
-])
+]),
+
+
+
 
 
 @app.callback(
@@ -128,7 +128,8 @@ html.Div([
         Output('vehicle-type-bar', 'figure'),
         Output('city-vehicle-model-map', 'figure'),
         Output('popular-make-model', 'children'),
-        Output('vehicle-type-treemap', 'figure') 
+      
+       
     ],
     [Input('city-dropdown', 'value')]
 )
@@ -142,7 +143,7 @@ def update_dashboard(selected_city):
     wheelchair_accessible_pct = (
         filtered_df['Wheelchair Accessible'].value_counts(normalize=True).get('Y', 0) * 100
     )
-    average_model_year = filtered_df['Vehicle Model Year'].mean()
+    average_model_year = filtered_df['Vehicle Model Year'].median()
 
     key_metrics = [
         html.Div([
@@ -170,7 +171,7 @@ def update_dashboard(selected_city):
     # Piecharts
     fuel_pie = px.pie(
         filtered_df, names='Vehicle Fuel Source', title='Vehicle Fuel Source Distribution',
-        color_discrete_sequence=px.colors.qualitative.Pastel
+        color_discrete_sequence=px.colors.qualitative.Pastel,hole=0.7
     )
     
     filtered_df['Wheelchair Accessible Label'] = filtered_df['Wheelchair Accessible'].map({'Y': 'Yes', 'N': 'No'})
@@ -196,7 +197,7 @@ def update_dashboard(selected_city):
     vehicle_type_counts = filtered_df['Vehicle Type'].value_counts().reset_index()
     vehicle_type_counts.columns = ['Vehicle Type', 'Count']
     vehicle_type_bar = px.bar(
-        vehicle_type_counts, x='Vehicle Type', y='Count',
+        vehicle_type_counts, x='Count', y='Vehicle Type',
         labels={'Vehicle Type': 'Vehicle Type', 'Count': 'Count'},
         title='Count of Vehicles by Type',
         color_discrete_sequence=['#EF553B']
@@ -215,14 +216,7 @@ def update_dashboard(selected_city):
         zoom=5,
         mapbox_style="open-street-map"
     )
-    vehicle_type_treemap = px.treemap(
-        df,
-        path=['Vehicle Type'], 
-        values='Vehicle Model Year',  
-        title='Treemap of Vehicle Types',
-        color='Vehicle Type',  
-        color_discrete_sequence=px.colors.qualitative.Pastel
-    )
+    
     # popular model 
     if selected_city is None:
         most_popular_make = df['Vehicle Make'].value_counts().idxmax()
@@ -243,7 +237,9 @@ def update_dashboard(selected_city):
             html.H2(f"{most_popular_make} - {most_popular_model} - {most_popular_year} - {most_popular_color}", style={'color': '#ff5733','fontSize': '25px', 'fontFamily': 'Verdana, sans-serif'}),
         ])
 
-    return key_metrics, fuel_pie, wheelchair_pie, status_bar, vehicle_type_bar, city_model_map, popular_make_model,vehicle_type_treemap
+   
+    
+    return key_metrics, fuel_pie, wheelchair_pie, status_bar, vehicle_type_bar, city_model_map, popular_make_model
 
 
 if __name__ == "__main__":
